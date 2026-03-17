@@ -1,0 +1,125 @@
+version: "2"
+run:
+  tests: true
+  timeout: 5m
+linters:
+  enable:
+    - asasalint
+    - bodyclose
+    - errcheck
+    - errorlint
+    - gocritic
+    - gosec
+    - govet
+    - ineffassign
+    - noctx
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+  settings:
+    staticcheck:
+      checks:
+        - "all"
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+        - style
+      disabled-checks:
+        - hugeParam
+        - filepathJoin
+        - commentedOutCode
+        - unnamedResult
+        - ifElseChain
+        - paramTypeCombine
+        - importShadow
+        - emptyStringTest
+        - regexpSimplify
+    gosec:
+      excludes:
+        - G304
+    revive:
+      severity: warning
+      rules:
+        - name: dot-imports
+          severity: error
+        - name: var-naming
+        - name: indent-error-flow
+        - name: error-return
+        - name: unexported-return
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        text: should have comment
+      # Test files: allow exec.Command without context
+      - path: _test\.go
+        linters:
+          - noctx
+      # Test files: allow less strict file permissions
+      - path: _test\.go
+        linters:
+          - gosec
+        text: "G306"
+      # Test files: allow subprocess with variables (for mocking)
+      - path: _test\.go
+        linters:
+          - gosec
+        text: "G204"
+      # Test files: allow error pointer comparison for Unwrap tests
+      - path: _test\.go
+        linters:
+          - errorlint
+        text: "comparing with != will fail"
+      # Test files: string to byte comparison is fine
+      - path: _test\.go
+        linters:
+          - gocritic
+        text: "stringXbytes"
+      # Test files: allow hardcoded octal permissions for testing edge cases
+      - path: _test\.go
+        linters:
+          - gocritic
+        text: "octalLiteral"
+      # Prealloc is often too noisy for small slices
+      - path: \.go$
+        linters:
+          - prealloc
+      - path: internal/parser/
+        linters:
+          - revive
+        text: "avoid package names that conflict"
+      - path: internal/printer/
+        linters:
+          - revive
+        text: "avoid package names that conflict"
+      - path: internal/version/
+        linters:
+          - revive
+        text: "avoid package names that conflict"
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+output:
+  formats:
+    text:
+      path: stdout
+      colors: true

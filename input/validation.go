@@ -17,15 +17,15 @@ type ValidateFunc func(string) error
 const (
 	// Alphanumeric is the string representing the alphanumeric validation rule.
 	Alphanumeric ValidationRule = "alphanumeric"
-	// DigitsOnly is the string representing the alphanumeric validation rule.
+	// DigitsOnly is the string representing the digits-only validation rule.
 	DigitsOnly ValidationRule = "digits"
-	// Integers is the string representing the alphanumeric validation rule.
+	// Integers is the string representing the integer validation rule.
 	Integers ValidationRule = "integers"
-	// Floats is the string representing the alphanumeric validation rule.
+	// Floats is the string representing the float validation rule.
 	Floats ValidationRule = "floats"
-	// EmailAddress is the string representing the alphanumeric validation rule.
+	// EmailAddress is the string representing the email validation rule.
 	EmailAddress ValidationRule = "email"
-	// URL is the string representing the alphanumeric validation rule.
+	// URL is the string representing the URL validation rule.
 	URL ValidationRule = "url"
 )
 
@@ -37,6 +37,11 @@ var ruleErrorMsgMap = map[ValidationRule]string{
 	EmailAddress: "it must be a valid email address",
 	URL:          "it must be a valid URL",
 }
+
+var (
+	reAlphanumeric = regexp.MustCompile("^[a-zA-Z0-9 ]*$")
+	reDigitsOnly   = regexp.MustCompile(`^\d+$`)
+)
 
 // ===============================================================
 
@@ -65,7 +70,7 @@ func ValidateEmail(s string) error {
 	return validate(s, EmailAddress)
 }
 
-// ValidateURL is the validation function to validate an URL string.
+// ValidateURL is the validation function to validate a URL string.
 func ValidateURL(s string) error {
 	return validate(s, URL)
 }
@@ -73,40 +78,34 @@ func ValidateURL(s string) error {
 // ===============================================================
 
 func alphanumericMatcher(s string) bool {
-	re := regexp.MustCompile("^[a-zA-Z0-9 ]*$")
-	return re.MatchString(s)
+	return reAlphanumeric.MatchString(s)
 }
+
 func digitsOnlyMatcher(s string) bool {
-	re := regexp.MustCompile(`\d`)
-	return re.MatchString(s)
+	return reDigitsOnly.MatchString(s)
 }
 
 func integersMatch(s string) bool {
-	if _, err := strconv.ParseInt(s, 10, 64); err == nil {
-		return true
-	}
-	return false
+	_, err := strconv.ParseInt(s, 10, 64)
+	return err == nil
 }
 
 func floatMatcher(s string) bool {
-	if _, err := strconv.ParseInt(s, 10, 64); err == nil {
-		return true
-	}
-	return false
+	_, err := strconv.ParseFloat(s, 64)
+	return err == nil
 }
 
 func emailMatcher(s string) bool {
-	if _, err := mail.ParseAddress(s); err == nil {
-		return true
-	}
-	return false
+	_, err := mail.ParseAddress(s)
+	return err == nil
 }
 
-func urlMarcher(s string) bool {
-	if _, err := url.ParseRequestURI(s); err == nil {
-		return true
+func urlMatcher(s string) bool {
+	u, err := url.Parse(s)
+	if err != nil {
+		return false
 	}
-	return false
+	return u.Scheme != "" && u.Host != ""
 }
 
 // ===============================================================
@@ -136,14 +135,14 @@ func validate(field string, rule ValidationRule) error {
 			errorMsg = ruleErrorMsgMap[rule]
 		}
 	case URL:
-		if !urlMarcher(field) {
+		if !urlMatcher(field) {
 			errorMsg = ruleErrorMsgMap[rule]
 		}
 	default:
 		errorMsg = "unknown validation rule"
 	}
 
-	if !isEmpty(errorMsg) {
+	if errorMsg != "" {
 		return errors.New(errorMsg)
 	}
 	return nil

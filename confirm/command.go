@@ -3,7 +3,8 @@ package confirm
 import (
 	"fmt"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
+	"github.com/indaco/prompti"
 )
 
 const (
@@ -24,13 +25,7 @@ type Config struct {
 func (cfg *Config) setDefaults() {
 	cfg.OkButtonLabel = setOkButtonLabel(cfg)
 	cfg.CancelButtonLabel = setCancelButtonLabel(cfg)
-
-	if isEmpty(cfg.Styles) {
-		cfg.Styles = DefaultStyles()
-	} else {
-		cfg.Styles.setDefaults()
-	}
-
+	cfg.Styles.setDefaults()
 }
 
 func (cfg *Config) initialModel() model {
@@ -48,8 +43,9 @@ func (cfg *Config) initialModel() model {
 // Run provides a shell script interface for prompting a user to confirm an
 // action with an affirmative or negative answer.
 func Run(cfg *Config) (bool, error) {
-	cfg.setDefaults()
-	p := tea.NewProgram(cfg.initialModel())
+	c := *cfg
+	c.setDefaults()
+	p := tea.NewProgram(c.initialModel())
 	m, err := p.Run()
 
 	if err != nil {
@@ -60,20 +56,20 @@ func Run(cfg *Config) (bool, error) {
 		return true, nil
 	}
 
-	return false, nil
+	return false, prompti.ErrCancelled
 }
 
 // =================================================================
 
 func setOkButtonLabel(cfg *Config) string {
-	if isEmpty(cfg.OkButtonLabel) {
+	if cfg.OkButtonLabel == "" {
 		return okLabel
 	}
 	return cfg.OkButtonLabel
 }
 
 func setCancelButtonLabel(cfg *Config) string {
-	if isEmpty(cfg.CancelButtonLabel) {
+	if cfg.CancelButtonLabel == "" {
 		return cancelLabel
 	}
 	return cfg.CancelButtonLabel

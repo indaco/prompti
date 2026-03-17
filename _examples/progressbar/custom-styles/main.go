@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/sveltinio/prompti/progressbar"
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/progressbar"
 )
 
 func main() {
@@ -37,11 +37,11 @@ func main() {
 		Styles: progressbar.Styles{
 			CurrentItemStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("411")),
 			ShowLabel:        true,
-			GradientFrom:     "#FF7CCB",
-			GradientTo:       "#FDFF8C",
+			GradientFrom:     lipgloss.Color("#FF7CCB"),
+			GradientTo:       lipgloss.Color("#FDFF8C"),
 		}}
 
-	if _, err := progressbar.Run(pbConfig); err != nil {
+	if err := progressbar.Run(pbConfig); err != nil {
 		fmt.Println("error running program:", err)
 		os.Exit(1)
 	}

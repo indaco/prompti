@@ -1,13 +1,15 @@
-// Package choose ...
+// Package choose provides an interactive single-select list prompt built on bubbletea.
 package choose
 
 import (
 	"fmt"
 	"io"
+	"strings"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
 )
 
 type errMsg error
@@ -20,6 +22,41 @@ type Item struct {
 
 // FilterValue returns the current value of the filter.
 func (i Item) FilterValue() string { return i.Name }
+
+// String returns the item name.
+func (i *Item) String() string {
+	return i.Name
+}
+
+// GetItemsKeys returns a slice of strings representing the item names.
+func GetItemsKeys(items []Item) []string {
+	res := []string{}
+	for _, v := range items {
+		res = append(res, v.Name)
+	}
+	return res
+}
+
+// ToItems converts a slice of strings into a slice of Item.
+func ToItems(items []string) []Item {
+	res := []Item{}
+	for _, v := range items {
+		res = append(res, Item{
+			Name: v,
+			Desc: v,
+		})
+	}
+	return res
+}
+
+// toListItems converts a slice of Item to a slice of list.Item.
+func toListItems(items []Item) []list.Item {
+	res := make([]list.Item, len(items))
+	for i, v := range items {
+		res[i] = v
+	}
+	return res
+}
 
 type itemDelegate struct {
 	ItemIcon          string
@@ -36,16 +73,16 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprint(d.ItemIcon + whitespace + i.Desc)
+	str := d.ItemIcon + theme.Whitespace + i.Desc
 
 	fn := d.ItemStyle.Render
 	if index == m.Index() {
 		fn = func(s ...string) string {
-			return d.SelectedItemStyle.Render(concatStrings("", s...))
+			return d.SelectedItemStyle.Render(strings.Join(s, ""))
 		}
 	}
 
-	fmt.Fprint(w, fn(str))
+	_, _ = fmt.Fprint(w, fn(str))
 }
 
 type model struct {
@@ -64,15 +101,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.list.SetWidth(msg.Width)
 		return m, nil
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEscape:
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			m.quitting = true
 			return m, tea.Quit
-		case tea.KeyEnter:
+		case "enter":
 			i, ok := m.list.SelectedItem().(Item)
 			if ok {
-				m.choice = string(i.Name)
+				m.choice = i.Name
 			}
 			return m, tea.Quit
 		}
@@ -86,9 +123,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.choice != "" {
-		return m.choice
+		return tea.NewView(m.choice)
 	}
-	return m.list.View()
+	return tea.NewView(m.list.View())
 }

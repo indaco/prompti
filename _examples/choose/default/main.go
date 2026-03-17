@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/list"
-	"github.com/sveltinio/prompti/choose"
+	"github.com/indaco/prompti/choose"
 )
 
 func main() {
@@ -13,10 +12,10 @@ func main() {
 		ErrorMsg: "Please, select your meal.",
 	}
 
-	entries := []list.Item{
-		choose.Item{Name: "pizza", Desc: "It's always pizza time!"},
-		choose.Item{Name: "kebab", Desc: "I feel turkish today, kebab!"},
-		choose.Item{Name: "carbonara", Desc: "Carbonara, NO cream, please!"},
+	entries := []choose.Item{
+		{Name: "pizza", Desc: "It's always pizza time!"},
+		{Name: "kebab", Desc: "I feel turkish today, kebab!"},
+		{Name: "carbonara", Desc: "Carbonara, NO cream, please!"},
 	}
 
 	result, _ := choose.Run(foodSelectionPrompt, entries)

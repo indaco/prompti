@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sveltinio/prompti/progressbar"
+	"github.com/indaco/prompti/progressbar"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 	pbConfig := &progressbar.Config{Items: fruits, RunConcurrently: true}
 
 	fmt.Println("Run commands concurrently")
-	if _, err := progressbar.Run(pbConfig); err != nil {
+	if err := progressbar.Run(pbConfig); err != nil {
 		fmt.Println("error running program:", err)
 		os.Exit(1)
 	}

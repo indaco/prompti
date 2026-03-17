@@ -1,11 +1,11 @@
 package choose
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"github.com/indaco/prompti"
 )
 
 // Config represents the struct to configure the tui command.
@@ -24,21 +24,17 @@ type Config struct {
 // setDefaults sets default values for Config if not present.
 func (cfg *Config) setDefaults(numOfItems int) {
 	cfg.ListHeight = setListHeight(cfg, numOfItems)
-
-	if isEmpty(cfg.Styles) {
-		cfg.Styles = DefaultStyles()
-	} else {
-		cfg.Styles.setDefaults()
-	}
+	cfg.Styles.setDefaults()
 }
 
-func (cfg *Config) initialModel(items []list.Item) model {
+func (cfg *Config) initialModel(items []Item) model {
+	listItems := toListItems(items)
 	itemDelegate := itemDelegate{
 		ItemIcon:          cfg.Styles.ItemIcon,
 		ItemStyle:         cfg.Styles.ItemStyle,
 		SelectedItemStyle: cfg.Styles.SelectedItemStyle,
 	}
-	l := list.New(items, itemDelegate, cfg.DefaultWidth, cfg.ListHeight)
+	l := list.New(listItems, itemDelegate, cfg.DefaultWidth, cfg.ListHeight)
 	l.Title = titleMessage(cfg.Styles.PrefixIcon, cfg.Styles.PrefixIconColor, cfg.Styles.TitleStyle, cfg.Title)
 	l.Styles.Title = cfg.Styles.TitleStyle
 	l.Styles.TitleBar = cfg.Styles.TitleBarStyle
@@ -48,14 +44,14 @@ func (cfg *Config) initialModel(items []list.Item) model {
 
 	return model{
 		list: l,
-		err:  errors.New(cfg.ErrorMsg),
 	}
 }
 
 // Run is used to prompt a list of available options to the user and retrieve the selection.
-func Run(cfg *Config, items []list.Item) (string, error) {
-	cfg.setDefaults(len(items))
-	p := tea.NewProgram(cfg.initialModel(items))
+func Run(cfg *Config, items []Item) (string, error) {
+	c := *cfg
+	c.setDefaults(len(items))
+	p := tea.NewProgram(c.initialModel(items))
 
 	tm, err := p.Run()
 	if err != nil {
@@ -64,11 +60,9 @@ func Run(cfg *Config, items []list.Item) (string, error) {
 	m := tm.(model)
 
 	if m.quitting {
-		fmt.Println(errorMessage(m.err.Error()))
-		return "", fmt.Errorf(m.err.Error())
+		return "", prompti.ErrCancelled
 	}
 
-	fmt.Println(resultMessage(cfg.Title, m.list.SelectedItem().FilterValue()))
 	return m.list.SelectedItem().FilterValue(), nil
 }
 

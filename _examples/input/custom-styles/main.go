@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/sveltinio/prompti/input"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/compat"
+	"github.com/indaco/prompti/input"
 )
 
 func main() {
@@ -14,10 +15,10 @@ func main() {
 		ErrorMsg:    "Project name is mandatory",
 		Styles: input.Styles{
 			PrefixIcon:      "*",
-			PrefixIconColor: lipgloss.AdaptiveColor{Light: "#ef4444", Dark: "#ef4444"},
+			PrefixIconColor: compat.AdaptiveColor{Light: lipgloss.Color("#ef4444"), Dark: lipgloss.Color("#ef4444")},
 			PlaceholderStyle: lipgloss.NewStyle().
-				Background(lipgloss.AdaptiveColor{Light: "#3b82f6", Dark: "#3b82f6"}).
-				Foreground(lipgloss.AdaptiveColor{Light: "#fde68a", Dark: "#fffbeb"}),
+				Background(compat.AdaptiveColor{Light: lipgloss.Color("#3b82f6"), Dark: lipgloss.Color("#3b82f6")}).
+				Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#fde68a"), Dark: lipgloss.Color("#fffbeb")}),
 		},
 	}
 

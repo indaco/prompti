@@ -1,11 +1,16 @@
 package toggle
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"image/color"
+
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
+)
 
 // Styles is the struct representing the style configuration options.
 type Styles struct {
 	PrefixIcon        string
-	PrefixIconColor   lipgloss.AdaptiveColor
+	PrefixIconColor   color.Color
 	QuestionStyle     lipgloss.Style
 	ButtonStyle       lipgloss.Style
 	ActiveButtonStyle lipgloss.Style
@@ -14,7 +19,7 @@ type Styles struct {
 }
 
 const (
-	questionMark = "?"
+	questionMark = theme.QuestionMark
 	okLabel      = "Yes"
 	cancelLabel  = "No"
 	cursorLabel  = ">"
@@ -22,28 +27,24 @@ const (
 )
 
 var (
-	// Colors
-	cyan   = lipgloss.AdaptiveColor{Light: "#4f46e5", Dark: "#c7d2fe"}
-	muted  = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
-	purple = lipgloss.AdaptiveColor{Light: "#7e22ce", Dark: "#a855f7"} // Light: purple-700, Dark: purple-500
 	// Styles
-	prefixIconStyle = func(color lipgloss.AdaptiveColor) lipgloss.Style {
-		return lipgloss.NewStyle().Bold(true).Foreground(color).PaddingRight(1)
+	prefixIconStyle = func(c color.Color) lipgloss.Style {
+		return lipgloss.NewStyle().Bold(true).Foreground(c).PaddingRight(1)
 	}
 	questionStyle = lipgloss.NewStyle().Bold(true).PaddingRight(1)
 	buttonStyle   = lipgloss.NewStyle().
-			Foreground(muted).Margin(0)
-	activeButtonStyle = buttonStyle.Copy().
-				Foreground(cyan).
+			Foreground(theme.Muted).Margin(0)
+	activeButtonStyle = buttonStyle.
+				Foreground(theme.Cyan).
 				Underline(true)
 	dialogStyle  = lipgloss.NewStyle()
 	dividerStyle = lipgloss.NewStyle().
 			Margin(0, 1).
-			Foreground(muted)
+			Foreground(theme.Muted)
 
 	defaultTheme = Styles{
 		PrefixIcon:        questionMark,
-		PrefixIconColor:   purple,
+		PrefixIconColor:   theme.Purple,
 		QuestionStyle:     questionStyle,
 		ButtonStyle:       buttonStyle,
 		ActiveButtonStyle: activeButtonStyle,
@@ -58,25 +59,25 @@ func DefaultStyles() (s Styles) {
 }
 
 func (t *Styles) setDefaults() {
-	if isEmpty(t.PrefixIcon) {
+	if t.PrefixIcon == "" {
 		t.PrefixIcon = defaultTheme.PrefixIcon
 	}
-	if isEmpty(t.PrefixIconColor) {
+	if t.PrefixIconColor == nil {
 		t.PrefixIconColor = defaultTheme.PrefixIconColor
 	}
-	if isEmpty(t.QuestionStyle) {
+	if theme.IsZeroStyle(t.QuestionStyle) {
 		t.QuestionStyle = defaultTheme.QuestionStyle
 	}
-	if isEmpty(t.ButtonStyle) {
+	if theme.IsZeroStyle(t.ButtonStyle) {
 		t.ButtonStyle = defaultTheme.ButtonStyle
 	}
-	if isEmpty(t.ActiveButtonStyle) {
+	if theme.IsZeroStyle(t.ActiveButtonStyle) {
 		t.ActiveButtonStyle = defaultTheme.ActiveButtonStyle
 	}
-	if isEmpty(t.DialogStyle) {
+	if theme.IsZeroStyle(t.DialogStyle) {
 		t.DialogStyle = defaultTheme.DialogStyle
 	}
-	if isEmpty(t.DividerStyle) {
+	if theme.IsZeroStyle(t.DividerStyle) {
 		t.DividerStyle = defaultTheme.DividerStyle
 	}
 }
