@@ -124,7 +124,7 @@ func (m model) View() tea.View {
 		pad + progressBar + counter)
 }
 
-//=============================================================================
+// =============================================================================
 
 func formatMsg(m *model, item string) string {
 	if m.showLabel {

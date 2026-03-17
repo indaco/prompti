@@ -1,7 +1,7 @@
 package progressbar
 
 import (
-	"math/rand"
+	"math/rand/v2"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -11,7 +11,7 @@ import (
 type Config struct {
 	Items         []string
 	OnProgressCmd func(string) tea.Cmd
-	//If true, the progressbar runs commands concurrently (tea.Batch) else in order (tea.Sequence).
+	// If true, the progressbar runs commands concurrently (tea.Batch) else in order (tea.Sequence).
 	OnProgressMsg   string
 	OnCompletedMsg  string
 	RunConcurrently bool
@@ -28,7 +28,7 @@ func (cfg *Config) setDefaults() {
 		cfg.OnProgressCmd = func(item string) tea.Cmd {
 			// This is where you'd do i/o stuff to download and install packages. In
 			// our case we're just pausing for a moment to simulate the process.
-			d := time.Millisecond * time.Duration(rand.Intn(500))
+			d := time.Millisecond * time.Duration(rand.IntN(500)) //nolint:gosec // non-cryptographic use for demo delay
 			return tea.Tick(d, func(t time.Time) tea.Msg {
 				return IncrementMsg(item)
 			})
