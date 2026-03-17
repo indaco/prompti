@@ -1,11 +1,16 @@
 package confirm
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"image/color"
+
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
+)
 
 // Styles is the struct representing the style configuration options.
 type Styles struct {
 	Width             int
-	BorderColor       lipgloss.AdaptiveColor
+	BorderColor       color.Color
 	BorderStyle       lipgloss.Border
 	MessageStyle      lipgloss.Style
 	QuestionStyle     lipgloss.Style
@@ -15,29 +20,23 @@ type Styles struct {
 }
 
 var (
-	// Colors
-	purple  = lipgloss.AdaptiveColor{Light: "#7e22ce", Dark: "#a855f7"} // Light: purple-700, Dark: purple-500
-	neutral = lipgloss.AdaptiveColor{Light: "737373", Dark: "#a3a3a3"}  // Light: neutral-500, Dark: neutral-400
-	amber   = lipgloss.AdaptiveColor{Light: "#fef3c7", Dark: "#fef3c7"} // Light: amber-100, Dark: amber-100
-
 	// Styles
 	width         = 50
-	borderColor   = purple
 	borderStyle   = lipgloss.RoundedBorder()
 	messageStyle  = lipgloss.NewStyle()
 	questionStyle = lipgloss.NewStyle().Bold(true)
 	buttonStyle   = lipgloss.NewStyle().
-			Foreground(amber).
-			Background(neutral).
+			Foreground(theme.Amber).
+			Background(theme.Neutral).
 			Padding(0, 3).
 			Margin(1, 1)
-	activeButtonStyle = buttonStyle.Copy().
-				Foreground(amber).
-				Background(purple).
+	activeButtonStyle = buttonStyle.
+				Foreground(theme.Amber).
+				Background(theme.Purple).
 				Underline(true)
 	dialogStyle = lipgloss.NewStyle().
 			Border(borderStyle).
-			BorderForeground(borderColor).
+			BorderForeground(theme.Purple).
 			Margin(1, 0, 0, 0).
 			Padding(1, 0).
 			BorderTop(true).
@@ -48,7 +47,7 @@ var (
 
 	defaultTheme = Styles{
 		Width:             width,
-		BorderColor:       borderColor,
+		BorderColor:       color.Color(theme.Purple),
 		BorderStyle:       borderStyle,
 		MessageStyle:      messageStyle,
 		QuestionStyle:     questionStyle,
@@ -59,18 +58,18 @@ var (
 )
 
 func setCustomDialogStyles(t *Styles) lipgloss.Style {
-	_width := 50
-	if !isEmpty(t.Width) {
+	_width := width
+	if t.Width != 0 {
 		_width = t.Width
 	}
 
 	_borderStyle := borderStyle
-	if !isEmpty((t.BorderStyle)) {
+	if !theme.IsZeroBorder(t.BorderStyle) {
 		_borderStyle = t.BorderStyle
 	}
 
-	_borderColor := purple
-	if !isEmpty((t.BorderColor)) {
+	_borderColor := color.Color(theme.Purple)
+	if t.BorderColor != nil {
 		_borderColor = t.BorderColor
 	}
 
@@ -92,35 +91,35 @@ func DefaultStyles() (s Styles) {
 }
 
 func (t *Styles) setDefaults() {
-	if isEmpty(t.Width) {
+	if t.Width == 0 {
 		t.Width = defaultTheme.Width
 	}
 
-	if isEmpty(t.BorderColor) {
+	if t.BorderColor == nil {
 		t.BorderColor = defaultTheme.BorderColor
 	}
 
-	if isEmpty(t.BorderStyle) {
+	if theme.IsZeroBorder(t.BorderStyle) {
 		t.BorderStyle = defaultTheme.BorderStyle
 	}
 
-	if isEmpty(t.MessageStyle) {
+	if theme.IsZeroStyle(t.MessageStyle) {
 		t.MessageStyle = defaultTheme.MessageStyle
 	}
 
-	if isEmpty(t.QuestionStyle) {
+	if theme.IsZeroStyle(t.QuestionStyle) {
 		t.QuestionStyle = defaultTheme.QuestionStyle
 	}
 
-	if isEmpty(t.ButtonStyle) {
+	if theme.IsZeroStyle(t.ButtonStyle) {
 		t.ButtonStyle = defaultTheme.ButtonStyle
 	}
 
-	if isEmpty(t.ActiveButtonStyle) {
+	if theme.IsZeroStyle(t.ActiveButtonStyle) {
 		t.ActiveButtonStyle = defaultTheme.ActiveButtonStyle
 	}
 
-	if isEmpty(t.DialogStyle) {
+	if theme.IsZeroStyle(t.DialogStyle) {
 		t.DialogStyle = setCustomDialogStyles(t)
 	}
 }

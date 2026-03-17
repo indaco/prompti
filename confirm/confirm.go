@@ -1,9 +1,9 @@
-// Package confirm ...
+// Package confirm provides an interactive yes/no confirmation dialog with a styled message box.
 package confirm
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 type model struct {
@@ -24,9 +24,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		return m, nil
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
-		case "ctrl+c", "esc", "q", "n", "N":
+		case "ctrl+c", "esc", "q", "n":
 			m.confirmation = false
 			m.quitting = true
 			return m, tea.Quit
@@ -36,7 +36,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.quitting = true
 			return m, tea.Quit
-		case "y", "Y":
+		case "y":
 			m.quitting = true
 			m.confirmation = true
 			return m, tea.Quit
@@ -45,9 +45,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.quitting {
-		return ""
+		return tea.NewView("")
 	}
 
 	var aff, neg string
@@ -65,7 +65,7 @@ func (m model) View() string {
 	buttons := lipgloss.JoinHorizontal(lipgloss.Left, aff, neg)
 
 	var ui string
-	if !isEmpty(message) {
+	if message != "" {
 		ui = m.styles.DialogStyle.Render(
 			lipgloss.JoinVertical(lipgloss.Center, message, "\n", question, buttons))
 	} else {
@@ -73,5 +73,5 @@ func (m model) View() string {
 			lipgloss.JoinVertical(lipgloss.Center, question, buttons))
 	}
 
-	return lipgloss.NewStyle().Render(ui)
+	return tea.NewView(lipgloss.NewStyle().Render(ui))
 }
