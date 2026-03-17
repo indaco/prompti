@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sveltinio/prompti/toggle"
+	"github.com/indaco/prompti/toggle"
 )
 
 func main() {

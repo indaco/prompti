@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sveltinio/prompti/confirm"
+	"github.com/indaco/prompti/confirm"
 )
 
 func main() {

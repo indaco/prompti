@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sveltinio/prompti/input"
+	"github.com/indaco/prompti/input"
 )
 
 func main() {

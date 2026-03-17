@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/sveltinio/prompti/confirm"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/compat"
+	"github.com/indaco/prompti/confirm"
 )
 
 var (
-	cyan  = lipgloss.AdaptiveColor{Light: "#4f46e5", Dark: "#c7d2fe"}
-	green = lipgloss.AdaptiveColor{Light: "#166534", Dark: "#22c55e"} // Light: green-800, Dark:
+	cyan  = compat.AdaptiveColor{Light: lipgloss.Color("#4f46e5"), Dark: lipgloss.Color("#c7d2fe")}
+	green = compat.AdaptiveColor{Light: lipgloss.Color("#166534"), Dark: lipgloss.Color("#22c55e")}
 
 	infoText = `Lorem ipsum dolor sit amet,
 consectetur adipiscing elit %s...`
