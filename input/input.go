@@ -1,12 +1,11 @@
-// Package input ...
+// Package input provides an interactive text input prompt with optional validation.
 package input
 
 import (
-	"errors"
-
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
 )
 
 type model struct {
@@ -15,38 +14,39 @@ type model struct {
 	placeholder  string
 	initial      string
 	err          error
-	errMsg       string
 	quitting     bool
 	validateFunc ValidateFunc
 }
 
-func (m model) Init() tea.Cmd { return textinput.Blink }
-func (m model) View() string {
-	if isEmpty(m.textInput.Value()) {
-		return m.textInput.View()
+func (m model) Init() tea.Cmd { return nil }
+func (m model) View() tea.View {
+	if m.textInput.Value() == "" {
+		return tea.NewView(m.textInput.View())
 	}
 
 	if m.err != nil {
-		return lipgloss.NewStyle().Render(
+		return tea.NewView(lipgloss.NewStyle().Render(
 			lipgloss.JoinVertical(lipgloss.Left,
 				m.textInput.View(),
-				errorMessage(m.err.Error())))
+				errorMessage(m.err.Error()))))
 	}
 
-	return m.textInput.View()
+	return tea.NewView(m.textInput.View())
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEscape:
+	case tea.WindowSizeMsg:
+		m.textInput.SetWidth(msg.Width)
+		return m, nil
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			m.quitting = true
-			m.err = errors.New(m.errMsg)
 			return m, tea.Quit
-		case tea.KeyEnter:
-			if !isEmpty(m.initial) && isEmpty(m.textInput.Value()) {
+		case "enter":
+			if m.initial != "" && m.textInput.Value() == "" {
 				if m.validateFunc != nil {
 					m.err = m.validateFunc(m.initial)
 				}
@@ -54,6 +54,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			if m.err == nil || m.validateFunc == nil || m.validateFunc(m.textInput.Value()) == nil {
+				m.err = nil
 				return m, tea.Quit
 			}
 		}
@@ -66,4 +67,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	return m, cmd
+}
+
+var errorMessage = func(s string) string {
+	return errorStyle.Render(
+		lipgloss.JoinHorizontal(lipgloss.Center,
+			cancelMarkStyle.Render(theme.CancelMark), s))
 }

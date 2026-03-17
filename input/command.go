@@ -1,11 +1,11 @@
 package input
 
 import (
-	"errors"
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"github.com/indaco/prompti"
 )
 
 // Config represents the struct to configure the tui input.
@@ -17,33 +17,30 @@ type Config struct {
 	Password     bool
 	ValidateFunc ValidateFunc
 
-	ShowResult bool
-	Styles     Styles
+	Styles Styles
 }
 
 // setDefaults sets default values for Config struct.
 func (cfg *Config) setDefaults() {
-	cfg.ShowResult = true
 	cfg.Placeholder = setDefaultPlaceholderMsg(cfg)
-
-	if isEmpty(cfg.Styles) {
-		cfg.Styles = DefaultStyles()
-	} else {
-		cfg.Styles.setDefaults()
-	}
+	cfg.Styles.setDefaults()
 }
 
 func (cfg *Config) initialModel() model {
 	ti := textinput.New()
 
 	ti.Focus()
+	ti.SetWidth(80)
 	ti.Prompt = promptMessage(cfg.Message, cfg.Styles.PrefixIcon, cfg.Styles.PrefixIconColor)
 
 	ti.Placeholder = cfg.Placeholder
-	ti.TextStyle = cfg.Styles.TextStyle
-	ti.PromptStyle = prefixIconStyle(cfg.Styles.PrefixIconColor)
-	ti.PlaceholderStyle = cfg.Styles.PlaceholderStyle
-	ti.Cursor.Style = cfg.Styles.CursorStyle
+
+	styles := ti.Styles()
+	styles.Focused.Text = cfg.Styles.TextStyle
+	styles.Focused.Prompt = prefixIconStyle(cfg.Styles.PrefixIconColor)
+	styles.Focused.Placeholder = cfg.Styles.PlaceholderStyle
+	ti.SetStyles(styles)
+
 	if cfg.Password {
 		ti.EchoMode = textinput.EchoPassword
 		ti.EchoCharacter = '*'
@@ -55,15 +52,15 @@ func (cfg *Config) initialModel() model {
 		placeholder:  cfg.Placeholder,
 		initial:      cfg.Initial,
 		err:          nil,
-		errMsg:       cfg.ErrorMsg,
 		validateFunc: cfg.ValidateFunc,
 	}
 }
 
 // Run is used to prompt an input the user and retrieve the value.
 func Run(cfg *Config) (string, error) {
-	cfg.setDefaults()
-	p := tea.NewProgram(cfg.initialModel())
+	c := *cfg
+	c.setDefaults()
+	p := tea.NewProgram(c.initialModel())
 
 	tm, err := p.Run()
 	if err != nil {
@@ -71,16 +68,12 @@ func Run(cfg *Config) (string, error) {
 	}
 	m := tm.(model)
 
-	if m.quitting || isEmpty(m.textInput.Value()) {
-		if m.err == nil {
-			m.err = errors.New(m.errMsg)
-		}
-		fmt.Println(errorMessage(m.err.Error()))
-		return "", m.err
+	if m.quitting {
+		return "", prompti.ErrCancelled
 	}
 
-	if cfg.ShowResult && !cfg.Password {
-		fmt.Println(resultMessage(m.message, m.textInput.Value()))
+	if m.textInput.Value() == "" {
+		return "", prompti.ErrEmpty
 	}
 
 	return m.textInput.Value(), m.err
@@ -89,11 +82,8 @@ func Run(cfg *Config) (string, error) {
 // =================================================================
 
 func setDefaultPlaceholderMsg(cfg *Config) string {
-	placeholderMsg := ""
-	if !isEmpty(cfg.Initial) {
-		placeholderMsg = fmt.Sprintf("%s (Default: %s)", cfg.Placeholder, cfg.Initial)
-	} else {
-		placeholderMsg = cfg.Placeholder
+	if cfg.Initial != "" {
+		return fmt.Sprintf("%s (Default: %s)", cfg.Placeholder, cfg.Initial)
 	}
-	return placeholderMsg
+	return cfg.Placeholder
 }
