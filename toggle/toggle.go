@@ -1,9 +1,10 @@
-// Package toggle ...
+// Package toggle provides an inline yes/no toggle prompt built on bubbletea.
 package toggle
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
 )
 
 type model struct {
@@ -25,9 +26,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		return m, nil
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
-		case "ctrl+c", "esc", "q", "n", "N":
+		case "ctrl+c", "esc", "q", "n":
 			m.confirmation = false
 			m.quitting = true
 			return m, tea.Quit
@@ -37,7 +38,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.quitting = true
 			return m, tea.Quit
-		case "y", "Y":
+		case "y":
 			m.quitting = true
 			m.confirmation = true
 			return m, tea.Quit
@@ -46,9 +47,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.quitting {
-		return ""
+		return tea.NewView("")
 	}
 
 	var ok, cancel string
@@ -62,9 +63,9 @@ func (m model) View() string {
 	}
 
 	question := m.styles.QuestionStyle.Render(prefixIconStyle(m.styles.PrefixIconColor).Render(m.styles.PrefixIcon) + m.question)
-	prompt := lipgloss.NewStyle().Foreground(cyan).PaddingRight(1).Render(m.cursor)
+	prompt := lipgloss.NewStyle().Foreground(theme.Cyan).PaddingRight(1).Render(m.cursor)
 	buttons := lipgloss.JoinHorizontal(0.5, ok, m.styles.DividerStyle.Render(m.divider), cancel)
 	ui := m.styles.DialogStyle.Render(lipgloss.JoinHorizontal(lipgloss.Center, question, prompt, buttons))
 
-	return lipgloss.NewStyle().Render(ui)
+	return tea.NewView(lipgloss.NewStyle().Render(ui))
 }
