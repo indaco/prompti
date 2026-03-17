@@ -5,47 +5,66 @@
 Lightweight and customizable interactive prompt components for Go based CLI.
 </h2>
 <p align="center">
-    <a href="https://github.com/sveltinio/prompti/blob/main/LICENSE" target="_blank">
-        <img src="https://img.shields.io/badge/license-mit-blue?style=flat-square&logo=none" alt="license" />
-    </a>
-     &nbsp;
-     <a href="https://goreportcard.com/report/github.com/sveltinio/prompti/" target="_blank">
-        <img src="https://goreportcard.com/badge/github.com/sveltinio/prompti" alt="go report card" />
-    </a>
-    &nbsp;
-    <a href="https://pkg.go.dev/github.com/sveltinio/prompti/" target="_blank">
-        <img src="https://pkg.go.dev/badge/github.com/sveltinio/prompti/.svg" alt="go reference" />
-    </a>
-     &nbsp;
-    <a href="https://github.com/sveltinio/prompti" target="_blank">
-        <img src="https://img.shields.io/badge/version-v0.2.5-success?style=flat-square&logo=none" alt="sveltin cli version" />
-    </a>
+  <a href="https://github.com/indaco/prompti/actions/workflows/ci.yml" target="_blank">
+    <img src="https://github.com/indaco/prompti/actions/workflows/ci.yml/badge.svg" alt="CI" />
+  </a>
+  <a href="https://codecov.io/gh/indaco/prompti" target="_blank">
+    <img src="https://codecov.io/gh/indaco/prompti/branch/main/graph/badge.svg" alt="Code coverage" />
+  </a>
+  <a href="https://goreportcard.com/report/github.com/indaco/prompti" target="_blank">
+    <img src="https://goreportcard.com/badge/github.com/indaco/prompti" alt="Go Report Card" />
+  </a>
+  <a href="https://github.com/indaco/prompti/security" target="_blank">
+    <img src="https://img.shields.io/badge/security-govulncheck-green" alt="Security Scan" />
+  </a>
+  <a href="https://github.com/indaco/prompti/releases" target="_blank">
+    <img src="https://img.shields.io/github/v/tag/indaco/prompti?label=version&sort=semver&color=4c1" alt="version">
+  </a>
+  <a href="https://pkg.go.dev/github.com/indaco/prompti" target="_blank">
+    <img src="https://pkg.go.dev/badge/github.com/indaco/prompti.svg" alt="Go Reference" />
+  </a>
+  <a href="LICENSE" target="_blank">
+    <img src="https://img.shields.io/badge/license-mit-blue?style=flat-square" alt="License" />
+  </a>
+  <a href="https://www.jetify.com/devbox" target="_blank">
+    <img src="https://www.jetify.com/img/devbox/shield_moon.svg" alt="Built with Devbox" />
+  </a>
 </p>
 
-**prompti** is a collection of TUI blocks initially created to be used by [sveltin](https://github.com/sveltinio/sveltin) and its use cases. We worked on it to allow customizations and make it available as standalone package. Here it is!
+> **Note**
+> This project was previously hosted at `github.com/sveltinio/prompti`. The repository has been transferred to `github.com/indaco/prompti` under the same maintainer.
+
+**prompti** is a collection of interactive TUI prompt components for Go CLI applications, built on the [Charm](https://charm.sh) ecosystem (bubbletea, bubbles, lipgloss).
+
+## Features
+
+- **5 prompt types**: input, choose, confirm, toggle, progressbar
+- **Customizable styles**: every component accepts a `Styles` struct for full visual control
+- **Sentinel errors**: distinguish user cancellation (`ErrCancelled`) from empty input (`ErrEmpty`)
+- **Built-in validation**: ready-to-use validators for alphanumeric, digits, integers, floats, email, and URL
 
 ## Install
 
-Install the latest version by using the `go get` command. Ensure to have **(Go v1.18 or higher)** installed on your machine.
+Requires **Go 1.25** or higher.
 
 ```bash
-go get github.com/sveltinio/prompti@latest
+go get github.com/indaco/prompti@latest
 ```
 
 ## Prompts
 
 ### Input
 
-`input` is a terminal input prompt component supporting default values, validations (`type ValidateFunc func(string) error`), password input echo and _customizable_ styles.
+`input` is a text input prompt supporting default values, validation (`type ValidateFunc func(string) error`), password echo mode, and customizable styles.
 
-It also provides ready to use validation functions for some common use cases:
+Built-in validation rules:
 
 - alphanumeric
 - digits only
 - integers
 - floats
 - email address
-- url
+- URL
 
 #### Default
 
@@ -53,7 +72,9 @@ It also provides ready to use validation functions for some common use cases:
 
 <img src="https://statics.sveltin.io/github/prompti/input/input-default.gif" alt="Input example">
 
-### Default value and validation
+#### Default value and validation
+
+[Source Code](_examples/input/initial-value/main.go)
 
 <img src="https://statics.sveltin.io/github/prompti/input/input-initial-value.gif" alt="Input example with default value and validation">
 
@@ -70,7 +91,7 @@ It also provides ready to use validation functions for some common use cases:
 
 ### Choose
 
-`choose` is a customizable component for browsing a set of items.
+`choose` is a single-select list prompt for browsing a set of items.
 
 #### Default
 
@@ -86,7 +107,7 @@ It also provides ready to use validation functions for some common use cases:
 
 ### Confirm
 
-`confirm` is a customizable component to confirm an anction.
+`confirm` is a yes/no confirmation dialog rendered in a styled box.
 
 #### Default
 
@@ -102,7 +123,7 @@ It also provides ready to use validation functions for some common use cases:
 
 ### Toggle
 
-`toggle` is a customizable component to confirm an anction. It works like `confirm` but it renders the options inline and not in a box.
+`toggle` is an inline yes/no prompt. It works like `confirm` but renders the options inline rather than in a box.
 
 #### Default
 
@@ -118,7 +139,7 @@ It also provides ready to use validation functions for some common use cases:
 
 ### ProgressBar
 
-`progressbar` is a customizable component for progress meter.
+`progressbar` is an animated progress meter that iterates over a list of items.
 
 #### Default
 
@@ -126,15 +147,20 @@ It also provides ready to use validation functions for some common use cases:
 
 <img src="https://statics.sveltin.io/github/prompti/progressbar/progressbar-default.gif" alt="ProgressBar example">
 
-#### Styled
+#### Custom styles
 
 [Source Code](_examples/progressbar/custom-styles/main.go)
 
-<img src="https://statics.sveltin.io/github/prompti/progressbar/progressbar-styled.gif" alt="ProgressBar example">
+<img src="https://statics.sveltin.io/github/prompti/progressbar/progressbar-styled.gif" alt="ProgressBar styled example">
 
-## :free: License
+#### Concurrent execution
+
+[Source Code](_examples/progressbar/run-batch/main.go)
+
+## License
 
 prompti is free and open-source software licensed under the MIT License.
 
-***
+---
+
 Made with [Charm](https://charm.sh).
