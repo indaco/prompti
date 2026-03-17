@@ -1,12 +1,14 @@
+// Package progressbar provides an animated progress bar that iterates over a list of items.
 package progressbar
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/progress"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/progress"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/indaco/prompti/internal/theme"
 )
 
 const (
@@ -53,14 +55,12 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		return m, tea.Quit
 
 	case tea.WindowSizeMsg:
-		m.progress.Width = msg.Width - padding*2 - 4
-		if m.progress.Width > maxWidth {
-			m.progress.Width = maxWidth
-		}
+		w := min(msg.Width-padding*2-4, maxWidth)
+		m.progress.SetWidth(w)
 		return m, nil
 
 	case IncrementErrMsg:
@@ -91,8 +91,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// FrameMsg is sent when the progress bar wants to animate itself
 	case progress.FrameMsg:
-		progressModel, cmd := m.progress.Update(msg)
-		m.progress = progressModel.(progress.Model)
+		var cmd tea.Cmd
+		m.progress, cmd = m.progress.Update(msg)
 		return m, cmd
 
 	default:
@@ -100,13 +100,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.err != nil {
-		return fmt.Sprintf("Error: %s\n", m.err)
+		return tea.NewView(fmt.Sprintf("Error: %s\n", m.err))
 	}
 
 	if m.done {
-		return doneStyle.Render(fmt.Sprintf("%s %s", checkMark.String(), m.onCompletedMsg))
+		return tea.NewView(doneStyle.Render(fmt.Sprintf("%s %s", checkMark.String(), m.onCompletedMsg)))
 	}
 
 	total := len(m.items)
@@ -119,9 +119,9 @@ func (m model) View() string {
 	itemName := formatItemName(&m, m.items[m.index])
 	infoStr := formatMsg(&m, itemName)
 
-	return "\n" +
+	return tea.NewView("\n" +
 		infoStr +
-		pad + progressBar + counter
+		pad + progressBar + counter)
 }
 
 //=============================================================================
@@ -134,8 +134,8 @@ func formatMsg(m *model, item string) string {
 }
 
 func formatItemName(m *model, item string) string {
-	if !isEmpty(m.currentItemNameStyle) {
-		return m.currentItemNameStyle.Render(m.items[m.index])
+	if !theme.IsZeroStyle(m.currentItemNameStyle) {
+		return m.currentItemNameStyle.Render(item)
 	}
-	return defaultCurrentItemNameStyle.Render(m.items[m.index])
+	return defaultCurrentItemNameStyle.Render(item)
 }

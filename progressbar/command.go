@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 // Config represents the struct to configure the tui command.
@@ -13,15 +13,15 @@ type Config struct {
 	OnProgressCmd func(string) tea.Cmd
 	//If true, the progressbar runs commands concurrently (tea.Batch) else in order (tea.Sequence).
 	OnProgressMsg   string
-	OnCompletesMsg  string
+	OnCompletedMsg  string
 	RunConcurrently bool
 	Styles          Styles
 }
 
 // setDefaults sets default values for Config if not present.
 func (cfg *Config) setDefaults() {
-	if cfg.OnCompletesMsg == "" {
-		cfg.OnCompletesMsg = "Done!"
+	if cfg.OnCompletedMsg == "" {
+		cfg.OnCompletedMsg = "Done!"
 	}
 
 	if cfg.OnProgressCmd == nil {
@@ -41,7 +41,7 @@ func (cfg *Config) initialModel() model {
 		items:                cfg.Items,
 		onProgressCmd:        cfg.OnProgressCmd,
 		onProgressMsg:        cfg.OnProgressMsg,
-		onCompletedMsg:       cfg.OnCompletesMsg,
+		onCompletedMsg:       cfg.OnCompletedMsg,
 		runConcurrently:      cfg.RunConcurrently,
 		showLabel:            cfg.Styles.ShowLabel,
 		currentItemNameStyle: cfg.Styles.CurrentItemStyle,
@@ -49,11 +49,11 @@ func (cfg *Config) initialModel() model {
 	}
 }
 
-// Run provides a shell script interface for prompting a user to confirm an
-// action with an affirmative or negative answer.
-func Run(cfg *Config) (tea.Model, error) {
-	cfg.setDefaults()
-	p := tea.NewProgram(cfg.initialModel())
-
-	return p.Run()
+// Run displays an animated progress bar that iterates over the configured items.
+func Run(cfg *Config) error {
+	c := *cfg
+	c.setDefaults()
+	p := tea.NewProgram(c.initialModel())
+	_, err := p.Run()
+	return err
 }
