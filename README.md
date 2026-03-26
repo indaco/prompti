@@ -14,8 +14,8 @@ Interactive TUI prompts for Go CLI applications, powered by Charm.
   <a href="https://goreportcard.com/report/github.com/indaco/prompti" target="_blank">
     <img src="https://goreportcard.com/badge/github.com/indaco/prompti" alt="Go Report Card" />
   </a>
-  <a href="https://github.com/indaco/prompti/security" target="_blank">
-    <img src="https://img.shields.io/badge/security-govulncheck-green" alt="Security Scan" />
+  <a href="https://github.com/indaco/prompti/actions/workflows/security.yml" target="_blank">
+    <img src="https://github.com/indaco/prompti/actions/workflows/security.yml/badge.svg" alt="Security Scan" />
   </a>
   <a href="https://github.com/indaco/prompti/releases" target="_blank">
     <img src="https://img.shields.io/github/v/tag/indaco/prompti?label=version&sort=semver&color=4c1" alt="version">
