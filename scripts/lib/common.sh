@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# common.sh - Shared utilities for sley CLI scripts
+# common.sh - Shared utilities for scripts
 # Auto-loads logger.sh and provides common functions
 
 set -euo pipefail

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# devbox-init.sh - Development environment setup for sley CLI
+# devbox-init.sh - Development environment setup for prompti
 # Called automatically by devbox shell init_hook
 
 set -eu
