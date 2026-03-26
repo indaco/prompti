@@ -4,7 +4,7 @@
 # Enabled plugins:
 #   - commit-parser
 #   - tag-manager
-#   - changelog-parser
+#   - changelog-generator
 
 path: .version
 plugins:
@@ -13,8 +13,8 @@ plugins:
   # Automatically creates git tags after version changes
   tag-manager:
     enabled: true
-  # Infers version bump from CHANGELOG.md entries
-  changelog-parser:
+  # Generates changelogs from git commits
+  changelog-generator:
     enabled: true
     use-default-icons: true
     contributors:
