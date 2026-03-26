@@ -6,27 +6,8 @@ logger := "scripts/lib/logger.sh"
 # Go commands
 
 go := "go"
-gobuild := go + " build"
 goclean := go + " clean"
-
-# Binary name
-
-app_name := "sley"
-
-# Directories
-
-build_dir := "build"
-cmd_dir := "cmd/" + app_name
-
-# Build optimization flags
-# -s: Omit the symbol table and debug information
-# -w: Omit the DWARF symbol table
-
-ldflags := "-s -w"
-
-# -trimpath: Remove file system paths from binary
-
-buildflags := "-trimpath"
+vhs := "vhs"
 
 # Default - show help
 default:
@@ -35,7 +16,6 @@ default:
 # Clean the build directory and Go cache
 clean:
     @. {{ logger }} && log_info "Clean the build directory and Go cache"
-    rm -rf {{ build_dir }}
     rm -f coverage.out coverage.html
     {{ goclean }} -cache
 
@@ -111,3 +91,15 @@ deps-update:
     @. {{ logger }} && log_info "Running go update deps"
     {{ go }} get -u ./...
     {{ go }} mod tidy
+
+# === Demos ===
+
+# Record a single VHS tape
+_record-tape name:
+    {{ vhs }} _examples/tapes/{{ name }}.tape
+
+# Record all VHS tapes
+demo-record:
+    @. {{ logger }} && log_info "Recording all VHS tapes"
+    for tape in _examples/tapes/*.tape; do {{ vhs }} "$tape"; done
+    @. {{ logger }} && log_success "All VHS tapes recorded"

@@ -5,7 +5,8 @@
     "go@latest",
     "golangci-lint@latest",
     "just@latest",
-    "prek@latest"
+    "prek@latest",
+    "vhs@latest"
   ],
   "env": {
     "GOPATH": "$HOME/go/",
