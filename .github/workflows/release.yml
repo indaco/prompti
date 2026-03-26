@@ -3,6 +3,8 @@ on:
   release:
     types: [created]
 
+permissions: {}
+
 env:
   GO_VERSION: '1.25'
 
@@ -10,21 +12,25 @@ jobs:
   create-release-notes:
     name: release-notes
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     environment:
       name: Release
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.release.tag_name }}
-          name: ${{ github.event.release.tag_name }}
-          draft: false
-          prerelease: false
-          make_latest: 'true'
-          token: ${{ secrets.PROMPTI_TOKEN }}
-          body_path: ${{ github.workspace }}/.changes/${{ github.event.release.tag_name }}.md
-          generate_release_notes: false
+          persist-credentials: false
+
+      - name: Update Release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          GH_TOKEN: ${{ secrets.PROMPTI_TOKEN }}
+        run: |
+          gh release edit "$RELEASE_TAG" \
+            --title "$RELEASE_TAG" \
+            --draft=false \
+            --prerelease=false \
+            --latest \
+            --notes-file "${{ github.workspace }}/.changes/${RELEASE_TAG}.md"
