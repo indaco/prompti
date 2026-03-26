@@ -7,6 +7,7 @@
 //   - input: text input with optional validation
 //   - confirm: yes/no confirmation dialog
 //   - toggle: inline yes/no toggle
+//   - detail: collapsible detail/summary section
 //   - progressbar: animated progress bar
 //
 // Each sub-package exposes a Config struct and a Run function.
