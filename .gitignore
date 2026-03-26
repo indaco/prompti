@@ -56,13 +56,13 @@ Temporary Items
 
 # Test binary, built with `go test -c`
 *.test
+coverage.out
+coverage.txt
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
 pre-release.sh
 
-# charmbracelet VHS files and output gif files
-*.tape
+# charmbracelet VHS output gif files
 output/
-vhs/

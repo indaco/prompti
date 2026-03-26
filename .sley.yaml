@@ -16,3 +16,7 @@ plugins:
   # Infers version bump from CHANGELOG.md entries
   changelog-parser:
     enabled: true
+    use-default-icons: true
+    contributors:
+      enabled: true
+      show-name: false

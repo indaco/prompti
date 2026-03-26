@@ -304,6 +304,54 @@
           "store_path": "/nix/store/yz3z6c8cyakkixhrxhn73nzfzj7202jm-prek-0.3.5"
         }
       }
+    },
+    "vhs@latest": {
+      "last_modified": "2026-03-21T07:29:51Z",
+      "resolved": "github:NixOS/nixpkgs/09061f748ee21f68a089cd5d91ec1859cd93d0be#vhs",
+      "source": "devbox-search",
+      "version": "0.10.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/09vfwr3ammjrm2ki6qnqgmdz36d74qv7-vhs-0.10.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/09vfwr3ammjrm2ki6qnqgmdz36d74qv7-vhs-0.10.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/4qxb6bcjf4d49pxjz4liajnl20lisi1m-vhs-0.10.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/4qxb6bcjf4d49pxjz4liajnl20lisi1m-vhs-0.10.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/rkw4h4l0rn2dxsa1hzx1mm1y5g9r52h6-vhs-0.10.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/rkw4h4l0rn2dxsa1hzx1mm1y5g9r52h6-vhs-0.10.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/9cg7n7g561vx4gk0idy9w59ngm2m270y-vhs-0.10.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/9cg7n7g561vx4gk0idy9w59ngm2m270y-vhs-0.10.0"
+        }
+      }
     }
   }
 }
