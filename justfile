@@ -64,7 +64,7 @@ deps:
 # Run all tests and print code coverage value
 test:
     @. {{ logger }} && log_info "Run all tests"
-    {{ go }} test $({{ go }} list ./... | grep -Ev 'internal/testutils') -coverprofile=coverage.txt
+    {{ go }} test $({{ go }} list ./... | grep -Ev 'internal/testutils|/examples/') -coverprofile=coverage.txt
     @. {{ logger }} && log_info "Total Coverage"
     {{ go }} tool cover -func=coverage.txt | grep total | awk '{print $3}'
 
@@ -77,12 +77,12 @@ test-force:
 # Run all tests and generate coverage report.
 test-coverage:
     @. {{ logger }} && log_info "Run all tests and generate coverage report"
-    {{ go }} test -count=1 -timeout 30s $({{ go }} list ./... | grep -Ev 'internal/testutils') -covermode=atomic -coverprofile=coverage.txt
+    {{ go }} test -count=1 -timeout 30s $({{ go }} list ./... | grep -Ev 'internal/testutils|/examples/') -covermode=atomic -coverprofile=coverage.txt
 
 # Run all tests with race detector
 test-race:
     @. {{ logger }} && log_info "Running tests with race detector"
-    {{ go }} test -race $({{ go }} list ./... | grep -Ev 'internal/testutils')
+    {{ go }} test -race $({{ go }} list ./... | grep -Ev 'internal/testutils|/examples/')
 
 # === Utilities ===
 
@@ -96,10 +96,10 @@ deps-update:
 
 # Record a single VHS tape
 _record-tape name:
-    {{ vhs }} _examples/tapes/{{ name }}.tape
+    {{ vhs }} examples/tapes/{{ name }}.tape
 
 # Record all VHS tapes
 demo-record:
     @. {{ logger }} && log_info "Recording all VHS tapes"
-    for tape in _examples/tapes/*.tape; do {{ vhs }} "$tape"; done
+    for tape in examples/tapes/*.tape; do {{ vhs }} "$tape"; done
     @. {{ logger }} && log_success "All VHS tapes recorded"
