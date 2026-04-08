@@ -39,6 +39,8 @@ Interactive TUI prompts for Go CLI applications, powered by Charm.
 ## Features
 
 - **5 prompt types**: input, choose, confirm (dialog and inline modes), detail, progressbar
+  - **Form components** (`input`, `choose`, `confirm`, `detail`): work standalone and as `huh.Field` adapters in multi-step forms
+  - **Feedback components** (`progressbar`): standalone bubbletea widgets for non-interactive output
 - **Dual usage**: use each component standalone via `Run()` or as a [`huh.Field`](https://github.com/charmbracelet/huh) in multi-step forms
 - **Customizable styles**: every component accepts a `Styles` struct for full visual control
 - **Accessible mode**: every `huh.Field` adapter implements `RunAccessible` for screen reader support
@@ -91,6 +93,8 @@ err := form.Run()
 
 The `input`, `choose`, `confirm` (both modes) components support huh.Field integration. See the [examples/06-huh-form](examples/06-huh-form) directory for a complete multi-group form example.
 
+Form components (`input`, `choose`, `confirm`, `detail`) support both modes. Feedback components like `progressbar` are standalone-only - they provide non-interactive output and cannot be embedded in a huh form.
+
 ## Prompts
 
 ### Input
@@ -137,12 +141,6 @@ func main() {
 
 #### Default value and validation
 
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/input-initial-value.gif" alt="Input initial value example">
-</details>
-
 ```go
 package main
 
@@ -167,12 +165,6 @@ func main() {
 ```
 
 #### Custom styles
-
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/input-styled.gif" alt="Input custom styles example">
-</details>
 
 ```go
 package main
@@ -292,12 +284,6 @@ func main() {
 
 #### Custom styles
 
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/choose-styled.gif" alt="Choose custom styles example">
-</details>
-
 ```go
 package main
 
@@ -353,8 +339,8 @@ func main() {
 
 `confirm` is a yes/no confirmation prompt with two visual modes:
 
-- **`ModeDialog`** (default) — a bordered dialog box with an optional message body
-- **`ModeInline`** — a compact single-line toggle with cursor and divider
+- **`ModeDialog`** (default) - a bordered dialog box with an optional message body
+- **`ModeInline`** - a compact single-line toggle with cursor and divider
 
 #### Dialog mode (default)
 
@@ -364,12 +350,6 @@ fmt.Println(result)
 ```
 
 #### Dialog mode with custom styles
-
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/confirm-styled.gif" alt="Confirm custom styles example">
-</details>
 
 ```go
 package main
@@ -415,7 +395,7 @@ func main() {
 <details>
 <summary><b>Preview</b></summary>
 
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-default.gif" alt="Confirm inline example">
+<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/confirm-inline-default.gif" alt="Confirm inline example">
 </details>
 
 ```go
@@ -427,12 +407,6 @@ fmt.Println(result)
 ```
 
 #### Inline mode with custom styles
-
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-styled.gif" alt="Confirm inline custom styles example">
-</details>
 
 ```go
 package main
@@ -530,12 +504,6 @@ func main() {
 
 #### Custom styles
 
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/detail-styled.gif" alt="Detail custom styles example">
-</details>
-
 ```go
 package main
 
@@ -615,7 +583,7 @@ func main() {
 <img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/progressbar-default.gif" alt="ProgressBar example">
 </details>
 
-`progressbar` is an animated progress meter that iterates over a list of items.
+`progressbar` is an animated progress meter that iterates over a list of items. It is a standalone-only component and does not support huh.Field integration.
 
 #### Default
 
@@ -662,12 +630,6 @@ func main() {
 ```
 
 #### Custom styles
-
-<details>
-<summary><b>Preview</b></summary>
-
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/progressbar-styled.gif" alt="ProgressBar custom styles example">
-</details>
 
 ```go
 package main

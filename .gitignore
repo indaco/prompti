@@ -65,4 +65,4 @@ coverage.txt
 pre-release.sh
 
 # charmbracelet VHS output gif files
-output/
+assets/
