@@ -1,4 +1,4 @@
-Output "./examples/output/confirm-default.gif"
+Output "./assets/confirm-default.gif"
 
 Set FontSize 16
 Set Width 1200
