@@ -15,6 +15,7 @@ type model struct {
 	initial      string
 	err          error
 	quitting     bool
+	submitted    bool
 	validateFunc ValidateFunc
 }
 
@@ -55,6 +56,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			if m.err == nil || m.validateFunc == nil || m.validateFunc(m.textInput.Value()) == nil {
 				m.err = nil
+				m.submitted = true
 				return m, tea.Quit
 			}
 		}
@@ -67,6 +69,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	return m, cmd
+}
+
+// isDone reports whether the model has completed (submitted or cancelled).
+func (m model) isDone() bool {
+	return m.submitted || m.quitting
+}
+
+// isCancelled reports whether the user cancelled the prompt.
+func (m model) isCancelled() bool {
+	return m.quitting
 }
 
 var errorMessage = func(s string) string {

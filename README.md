@@ -38,8 +38,10 @@ Interactive TUI prompts for Go CLI applications, powered by Charm.
 
 ## Features
 
-- **6 prompt types**: input, choose, confirm, toggle, detail, progressbar
+- **5 prompt types**: input, choose, confirm (dialog and inline modes), detail, progressbar
+- **Dual usage**: use each component standalone via `Run()` or as a [`huh.Field`](https://github.com/charmbracelet/huh) in multi-step forms
 - **Customizable styles**: every component accepts a `Styles` struct for full visual control
+- **Accessible mode**: every `huh.Field` adapter implements `RunAccessible` for screen reader support
 - **Sentinel errors**: distinguish user cancellation (`ErrCancelled`) from empty input (`ErrEmpty`)
 - **Built-in validation**: ready-to-use validators for alphanumeric, digits, integers, floats, email, and URL
 
@@ -50,6 +52,44 @@ Requires **Go 1.25** or higher.
 ```bash
 go get github.com/indaco/prompti@latest
 ```
+
+## Usage modes
+
+Every prompti component can be used in two ways:
+
+### Standalone
+
+Call `Run()` directly for single-prompt use cases. This starts its own bubbletea program and returns the result:
+
+```go
+result, err := input.Run(&input.Config{
+    Message: "Project name?",
+})
+```
+
+### As a huh.Field
+
+Use `NewField()` to create a [`huh.Field`](https://github.com/charmbracelet/huh) adapter that plugs into multi-step forms:
+
+```go
+var name string
+var confirmed bool
+
+form := huh.NewForm(
+    huh.NewGroup(
+        input.NewField(&input.Config{
+            Message: "Project name?",
+        }, &name),
+        confirm.NewField(&confirm.Config{
+            Question: "Create it?",
+        }, &confirmed),
+    ),
+)
+
+err := form.Run()
+```
+
+The `input`, `choose`, `confirm` (both modes) components support huh.Field integration. See the [examples/06-huh-form](examples/06-huh-form) directory for a complete multi-group form example.
 
 ## Prompts
 
@@ -311,26 +351,19 @@ func main() {
 <img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/confirm-default.gif" alt="Confirm example">
 </details>
 
-`confirm` is a yes/no confirmation dialog rendered in a styled box.
+`confirm` is a yes/no confirmation prompt with two visual modes:
 
-#### Default
+- **`ModeDialog`** (default) — a bordered dialog box with an optional message body
+- **`ModeInline`** — a compact single-line toggle with cursor and divider
+
+#### Dialog mode (default)
 
 ```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/indaco/prompti/confirm"
-)
-
-func main() {
-	result, _ := confirm.Run(&confirm.Config{Question: "Continue?"})
-	fmt.Println(result)
-}
+result, _ := confirm.Run(&confirm.Config{Question: "Continue?"})
+fmt.Println(result)
 ```
 
-#### Custom styles
+#### Dialog mode with custom styles
 
 <details>
 <summary><b>Preview</b></summary>
@@ -377,39 +410,28 @@ func main() {
 }
 ```
 
-### Toggle
+#### Inline mode
 
 <details>
 <summary><b>Preview</b></summary>
 
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-default.gif" alt="Toggle example">
+<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-default.gif" alt="Confirm inline example">
 </details>
 
-`toggle` is an inline yes/no prompt. It works like `confirm` but renders the options inline rather than in a box.
-
-#### Default
-
 ```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/indaco/prompti/toggle"
-)
-
-func main() {
-	result, _ := toggle.Run(&toggle.Config{Question: "Continue?"})
-	fmt.Println(result)
-}
+result, _ := confirm.Run(&confirm.Config{
+    Mode:     confirm.ModeInline,
+    Question: "Continue?",
+})
+fmt.Println(result)
 ```
 
-#### Custom styles
+#### Inline mode with custom styles
 
 <details>
 <summary><b>Preview</b></summary>
 
-<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-styled.gif" alt="Toggle custom styles example">
+<img src="https://raw.githubusercontent.com/indaco/gh-assets/main/prompti/toggle-styled.gif" alt="Confirm inline custom styles example">
 </details>
 
 ```go
@@ -420,16 +442,15 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/compat"
-	"github.com/indaco/prompti/toggle"
+	"github.com/indaco/prompti/confirm"
 )
 
 var (
-	cyan   = compat.AdaptiveColor{Light: lipgloss.Color("#4f46e5"), Dark: lipgloss.Color("#c7d2fe")}
-	green  = compat.AdaptiveColor{Light: lipgloss.Color("#166534"), Dark: lipgloss.Color("#22c55e")}
-	red    = compat.AdaptiveColor{Light: lipgloss.Color("#ef4444"), Dark: lipgloss.Color("#ef4444")}
-	purple = compat.AdaptiveColor{Light: lipgloss.Color("#7e22ce"), Dark: lipgloss.Color("#a855f7")}
+	cyan  = compat.AdaptiveColor{Light: lipgloss.Color("#4f46e5"), Dark: lipgloss.Color("#c7d2fe")}
+	green = compat.AdaptiveColor{Light: lipgloss.Color("#166534"), Dark: lipgloss.Color("#22c55e")}
+	red   = compat.AdaptiveColor{Light: lipgloss.Color("#ef4444"), Dark: lipgloss.Color("#ef4444")}
 
-	myCustomStyle = toggle.Styles{
+	myCustomStyle = confirm.Styles{
 		PrefixIcon:        "★",
 		PrefixIconColor:   red,
 		DialogStyle:       lipgloss.NewStyle().Margin(1, 0),
@@ -437,7 +458,8 @@ var (
 		ActiveButtonStyle: lipgloss.NewStyle().Foreground(green),
 	}
 
-	toggleConfig = &toggle.Config{
+	toggleConfig = &confirm.Config{
+		Mode:              confirm.ModeInline,
 		Question:          "How do you feel?",
 		OkButtonLabel:     "I'm super ok",
 		CancelButtonLabel: "Next question, please!",
@@ -447,7 +469,7 @@ var (
 )
 
 func main() {
-	result, _ := toggle.Run(toggleConfig)
+	result, _ := confirm.Run(toggleConfig)
 	fmt.Println(result)
 }
 ```

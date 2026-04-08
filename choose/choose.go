@@ -86,10 +86,11 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 }
 
 type model struct {
-	list     list.Model
-	err      error
-	choice   string
-	quitting bool
+	list      list.Model
+	err       error
+	choice    string
+	quitting  bool
+	submitted bool
 }
 
 func (m model) Init() tea.Cmd {
@@ -111,6 +112,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if ok {
 				m.choice = i.Name
 			}
+			m.submitted = true
 			return m, tea.Quit
 		}
 	case errMsg:
