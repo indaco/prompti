@@ -1,4 +1,4 @@
-Output "./examples/output/choose-default.gif"
+Output "./assets/choose-default.gif"
 
 Set FontSize 16
 Set Width 1200
