@@ -6,7 +6,7 @@ on:
 permissions: {}
 
 env:
-  GO_VERSION: '1.25'
+  GO_VERSION: "1.25"
 
 jobs:
   create-release-notes:
@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
